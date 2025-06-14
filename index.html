@@ -7,15 +7,26 @@
   <title>YouTube Thumbnail Downloader</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
   <style>
+    :root {
+      --bg-color: #f9fafb;
+      --text-color: #1f2937;
+      --card-color: #ffffff;
+    }
+    [data-theme='dark'] {
+      --bg-color: #1e293b;
+      --text-color: #f1f5f9;
+      --card-color: #334155;
+    }
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(to right, #f8fafc, #e2e8f0);
+      background-color: var(--bg-color);
+      color: var(--text-color);
       margin: 0;
       padding: 20px;
       text-align: center;
+      transition: all 0.3s ease;
     }
     h1 {
-      color: #1e293b;
       margin-bottom: 10px;
     }
     input {
@@ -25,44 +36,60 @@
       font-size: 16px;
       border: 2px solid #cbd5e1;
       border-radius: 10px;
-      margin-bottom: 15px;
+      margin: 15px 0;
     }
     button {
       padding: 10px 25px;
       font-size: 16px;
-      background-color: #2563eb;
+      background-color: #3b82f6;
       color: white;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      margin: 5px;
     }
     button:hover {
-      background-color: #1e40af;
+      background-color: #2563eb;
     }
-    .thumb-box {
+    .thumbnail {
       margin-top: 25px;
       animation: fadeIn 0.6s ease-in;
     }
-    .thumb-image {
+    .thumbnail img {
       width: 100%;
-      max-width: 500px;
+      max-width: 700px;
       border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      margin-bottom: 10px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
     }
-    .download-btn {
+    .download-btn, .channel-btn {
       display: inline-block;
-      margin: 5px;
-      padding: 10px 18px;
+      margin-top: 10px;
+      padding: 12px 25px;
       background-color: #10b981;
-      color: #fff;
-      border-radius: 8px;
+      color: white;
+      border-radius: 10px;
       text-decoration: none;
-      font-weight: bold;
+      font-weight: 600;
     }
     .download-btn:hover {
       background-color: #059669;
+    }
+    .channel-btn {
+      background-color: #6366f1;
+    }
+    .channel-btn:hover {
+      background-color: #4f46e5;
+    }
+    .toggle-mode {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: 2px solid var(--text-color);
+      color: var(--text-color);
+      padding: 5px 10px;
+      border-radius: 8px;
+      cursor: pointer;
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-10px); }
@@ -70,38 +97,36 @@
     }
   </style>
 </head>
-<body>
+<body data-theme="light">
+  <button class="toggle-mode" onclick="toggleTheme()">🌙</button>
   <h1>YouTube Thumbnail Downloader</h1>
-  <p>Enter YouTube Video URL to get thumbnails in different sizes</p>
+  <p>Enter YouTube Video URL to get high-resolution thumbnail</p>
   <input type="text" id="videoUrl" placeholder="Paste YouTube link here" />
   <br />
-  <button onclick="getThumbnails()">Get Thumbnails</button>
-
-  <div class="thumb-box" id="result"></div>
+  <button onclick="getThumbnail()">Get Thumbnail</button>
+  <div class="thumbnail" id="thumbnailResult"></div>
+  <br />
+  <a class="channel-btn" href="https://whatsapp.com/channel/0029VacWEfMAYlUJvpt7531g" target="_blank">Join Developer Channel</a>
 
   <script>
-    function getThumbnails() {
-      const url = document.getElementById('videoUrl').value;
+    function getThumbnail() {
+      const url = document.getElementById('videoUrl').value.trim();
       const videoId = url.split('v=')[1]?.split('&')[0] || url.split('/').pop();
       if (!videoId) return alert('Invalid YouTube URL');
 
-      const sizes = {
-        'Small (320x180)': `https://img.youtube.com/vi/${videoId}/1.jpg`,
-        'Medium (480x360)': `https://img.youtube.com/vi/${videoId}/2.jpg`,
-        'Large (1280x720)': `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
-      };
+      const src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+      const html = `
+        <img src="\${src}" alt="Thumbnail" />
+        <br />
+        <a class="download-btn" href="\${src}" download="thumbnail.jpg">Download Thumbnail</a>
+      `;
+      document.getElementById('thumbnailResult').innerHTML = html;
+    }
 
-      let html = '';
-      for (let [label, src] of Object.entries(sizes)) {
-        html += `
-          <h3>${label}</h3>
-          <img src="${src}" class="thumb-image" alt="${label}" />
-          <br />
-          <a class="download-btn" href="${src}" download>Download</a>
-        `;
-      }
-
-      document.getElementById('result').innerHTML = html;
+    function toggleTheme() {
+      const body = document.body;
+      const current = body.getAttribute('data-theme');
+      body.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
     }
   </script>
 </body>
